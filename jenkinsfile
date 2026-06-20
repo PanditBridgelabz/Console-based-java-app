@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Replace with your actual GitHub repository URL
+                git branch: 'main', url: 'https://github.com/PanditBridgelabz/Console-based-java-app.git'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building the Docker Image..."
+                    sh 'docker build -t java-console-app:latest .'
+                }
+            }
+        }
+        
+        stage('Deploy/Run Container') {
+            steps {
+                script {
+                    echo "Removing old container if it exists..."
+                    sh 'docker rm -f java-app-container || true'
+                    
+                    echo "Starting new container in detached mode..."
+                    // -d runs it in the background
+                    sh 'docker run -d --name java-app-container java-console-app:latest'
+                }
+            }
+        }
+    }
+}
